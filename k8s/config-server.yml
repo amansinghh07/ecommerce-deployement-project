@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: config-server
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: config-server
+
+  template:
+    metadata:
+      labels:
+        app: config-server
+
+    spec:
+      containers:
+        - name: config-server
+          image: devwhiz/ecommerce-config-server:latest
+
+          resources:
+            limits:
+              memory: "400Mi"
+              cpu: "200m"
+            requests:
+              memory: "200Mi"
+              cpu: "100m"
+
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: k8s
+
+            - name: GIT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: my-secret
+                  key: GIT_USERNAME
+
+            - name: GIT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: my-secret
+                  key: GIT_TOKEN
+
+          ports:
+            - containerPort: 8888
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: config-server
+
+spec:
+  selector:
+    app: config-server
+
+  ports:
+    - port: 8888
+      targetPort: 8888

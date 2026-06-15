@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: api-gateway
+  config:
+    import: configserver:http://config-server:8888
+#    c8+dI+cG2ihQECICxJje
+  cloud:
+    config:
+      fail-fast: true
+      retry:
+        initial-interval: 3000
+        max-attempts: 20
+        max-interval: 10000
